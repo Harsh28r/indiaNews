@@ -160,7 +160,7 @@ interface MarketStatus {
 export const useMarketStatus = () => {
   const [status, setStatus] = useState<MarketStatus | null>(null);
 
-  const fallbackStatus: MarketStatus = { status: 'closed', message: 'Market data unavailable' };
+  const fallbackStatus: MarketStatus = { status: 'closed', message: 'Market data unavailable', istTime: '', nextOpen: null };
   useEffect(() => {
     const fetchStatus = () => {
       api.get('/market/status')

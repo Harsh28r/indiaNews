@@ -1,7 +1,7 @@
 // FII/DII Institutional Flow Data
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Building2, TrendingUp, TrendingDown, RefreshCw, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { Building2, RefreshCw, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import api from '../services/api';
 
 interface DayData {

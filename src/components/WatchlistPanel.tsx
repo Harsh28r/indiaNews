@@ -1,6 +1,6 @@
 // Watchlist Panel - Shows user's watched stocks
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, TrendingUp, TrendingDown, X, Plus, Search, Bell } from 'lucide-react';
+import { Star, TrendingUp, TrendingDown, X, Plus, Search } from 'lucide-react';
 import { useState } from 'react';
 import { useWatchlist, useStockSearch } from '../hooks/useFeatures';
 import { Link } from 'react-router-dom';

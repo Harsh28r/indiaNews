@@ -9,7 +9,7 @@ interface Props {
   size?: 'sm' | 'md' | 'lg';
 }
 
-export default function SentimentBadge({ sentiment, score, confidence, size = 'md' }: Props) {
+export default function SentimentBadge({ sentiment, confidence, size = 'md' }: Props) {
   const configs = {
     bullish: {
       icon: TrendingUp,

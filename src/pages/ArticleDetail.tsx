@@ -5,7 +5,7 @@ import { ArrowLeft, Clock, User } from 'lucide-react';
 import { format } from 'date-fns';
 import { fetchArticle } from '../services/api';
 import type { NewsArticle } from '../types';
-import { useArticleSummary, useArticleStocks, useRelatedArticles } from '../hooks/useFeatures';
+import { useArticleSummary, useArticleStocks } from '../hooks/useFeatures';
 import TLDRBox from '../components/TLDRBox';
 import StockPill from '../components/StockPill';
 import ArticleActions from '../components/ArticleActions';
@@ -164,7 +164,7 @@ export default function ArticleDetail() {
 
   // Use custom hooks for article features
   const { summary, sentiment, loading: summaryLoading } = useArticleSummary(articleId);
-  const { stocks, loading: stocksLoading } = useArticleStocks(articleId);
+  const { stocks } = useArticleStocks(articleId);
 
   if (loading) {
     return (

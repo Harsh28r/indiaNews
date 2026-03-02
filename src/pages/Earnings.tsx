@@ -1,6 +1,6 @@
 // Earnings Calendar Page
 import { motion } from 'framer-motion';
-import { Calendar, Clock, TrendingUp, Bell, ChevronRight } from 'lucide-react';
+import { Calendar, TrendingUp, Bell, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useEarningsCalendar, usePriceAlerts } from '../hooks/useFeatures';
 import { format } from 'date-fns';

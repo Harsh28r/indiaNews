@@ -1,18 +1,18 @@
 // Stock Pill - Inline stock mention with price
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TrendingUp, TrendingDown, Plus, Check, ExternalLink } from 'lucide-react';
+import { TrendingUp, TrendingDown, Plus, Check } from 'lucide-react';
 import { useWatchlist } from '../hooks/useFeatures';
 
 interface Props {
   symbol: string;
-  name: string;
+  name?: string;
   price?: number;
   changePercent?: number;
   showAddToWatchlist?: boolean;
 }
 
-export default function StockPill({ symbol, name, price, changePercent, showAddToWatchlist = true }: Props) {
+export default function StockPill({ symbol, price, changePercent, showAddToWatchlist = true }: Props) {
   const [expanded, setExpanded] = useState(false);
   const { isWatching, addStock, removeStock } = useWatchlist();
   const watching = isWatching(symbol);
