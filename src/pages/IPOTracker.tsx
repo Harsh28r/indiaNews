@@ -1,9 +1,9 @@
 // IPO Tracker Page
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Rocket, Calendar, TrendingUp, TrendingDown, Users, Clock, CheckCircle } from 'lucide-react';
+import { Rocket, Calendar, TrendingUp, TrendingDown, Clock } from 'lucide-react';
 import { useIPOs } from '../hooks/useFeatures';
-import { format, formatDistanceToNow } from 'date-fns';
+import { format } from 'date-fns';
 
 type IPOStatus = 'all' | 'upcoming' | 'open' | 'listed';
 

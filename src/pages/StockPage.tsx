@@ -1,11 +1,9 @@
 // Stock Page - "Why is X moving?" feature
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, TrendingUp, TrendingDown, Star, StarOff, ExternalLink, Clock, Newspaper } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Star, StarOff, Newspaper } from 'lucide-react';
 import { useStockNews, useWatchlist } from '../hooks/useFeatures';
 import NewsCard from '../components/NewsCard';
-import SentimentBadge from '../components/SentimentBadge';
-import { formatDistanceToNow } from 'date-fns';
 
 export default function StockPage() {
   const { symbol } = useParams<{ symbol: string }>();
