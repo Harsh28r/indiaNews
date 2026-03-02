@@ -1,11 +1,11 @@
 {
-  "name": "BharatMarket - Indian Stock News",
-  "short_name": "BharatMarket",
-  "description": "Real-time Indian stock market news, analysis, and insights",
+  "name": "CoinsClarity Daily - Your Daily Dose of News",
+  "short_name": "CC Daily",
+  "description": "Markets, Stocks, Crypto, Business, Tech, Entertainment & Sports - all in one place",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0f",
-  "theme_color": "#ff9933",
+  "theme_color": "#00d4aa",
   "orientation": "portrait-primary",
   "icons": [
     {

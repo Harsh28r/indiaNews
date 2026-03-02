@@ -54,7 +54,7 @@ export default function BreakingNewsBanner() {
         // Fallback welcome message
         setNews([{
           article_id: 'welcome',
-          title: '📈 Welcome to BharatMarket - Your #1 source for Indian Stock Market News',
+          title: '📰 Welcome to CoinsClarity Daily - Your Daily Dose of News | Markets • Crypto • Business • Tech • Entertainment',
           isBreaking: false,
           priority: 'normal',
           pubDate: new Date().toISOString()
@@ -63,7 +63,7 @@ export default function BreakingNewsBanner() {
         console.error('Failed to fetch breaking news:', error);
         setNews([{
           article_id: 'welcome',
-          title: '📈 Welcome to BharatMarket - Live Market Updates & News',
+          title: '📰 CoinsClarity Daily - Stay informed with Markets, Business, Tech & Entertainment news',
           isBreaking: false,
           priority: 'normal',
           pubDate: new Date().toISOString()
@@ -139,6 +139,7 @@ export default function BreakingNewsBanner() {
                     // Internal link to article page
                     <Link 
                       to={`/article/${currentNews.article_id}`}
+                      state={{ article: currentNews }}
                       className="flex items-center gap-2 group cursor-pointer"
                     >
                       <p className="text-sm text-white font-medium truncate group-hover:underline">

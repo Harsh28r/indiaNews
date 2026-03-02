@@ -37,12 +37,15 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-saffron-500 to-saffron-600 flex items-center justify-center shadow-lg group-hover:glow-saffron transition-all">
-              <span className="text-surface-900 font-bold text-lg">₹</span>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg group-hover:shadow-emerald-500/30 transition-all">
+              <span className="text-white font-bold text-lg">CC</span>
             </div>
             <div className="hidden sm:block">
-              <h1 className="text-xl font-bold text-gradient-saffron">BharatMarket</h1>
-              <p className="text-[10px] text-gray-500 -mt-1">Indian Stock News</p>
+              <div className="flex items-baseline gap-1">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">CoinsClarity</h1>
+                <span className="text-sm font-semibold text-gray-400">Daily</span>
+              </div>
+              <p className="text-[10px] text-gray-500 -mt-1">Your Daily Dose of News</p>
             </div>
           </Link>
 

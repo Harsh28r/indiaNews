@@ -26,11 +26,12 @@ export default function MarketMovers() {
       setLoading(true);
       const res = await api.get('/market/movers');
       if (res.data.success) {
-        setGainers(res.data.data.gainers);
-        setLosers(res.data.data.losers);
+        setGainers(res.data.data.gainers ?? []);
+        setLosers(res.data.data.losers ?? []);
       }
-    } catch (error) {
-      console.error('Failed to fetch market movers:', error);
+    } catch {
+      setGainers([]);
+      setLosers([]);
     } finally {
       setLoading(false);
     }

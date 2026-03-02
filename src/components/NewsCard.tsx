@@ -75,6 +75,7 @@ export default function NewsCard({ article, variant = 'default' }: Props) {
     return (
       <Link
         to={`/article/${article.article_id}`}
+        state={{ article }}
         className="group relative block rounded-2xl overflow-hidden card-hover"
       >
         <div className="aspect-[16/9] relative">
@@ -111,6 +112,7 @@ export default function NewsCard({ article, variant = 'default' }: Props) {
     return (
       <Link
         to={`/article/${article.article_id}`}
+        state={{ article }}
         className="group flex gap-4 p-3 rounded-xl hover:bg-surface-700/30 transition-all"
       >
         <div className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden">
@@ -140,6 +142,7 @@ export default function NewsCard({ article, variant = 'default' }: Props) {
   return (
     <Link
       to={`/article/${article.article_id}`}
+      state={{ article }}
       className="group block bg-surface-800 rounded-2xl overflow-hidden border border-surface-700/50 card-hover"
     >
       <div className="aspect-[16/10] relative overflow-hidden">

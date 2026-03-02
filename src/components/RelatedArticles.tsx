@@ -51,6 +51,7 @@ export default function RelatedArticles({ articleId }: Props) {
           >
             <Link
               to={`/article/${article.article_id}`}
+              state={{ article }}
               className="flex gap-4 p-4 rounded-xl bg-surface-700/30 hover:bg-surface-700/50 transition-colors group"
             >
               {article.image_url && (

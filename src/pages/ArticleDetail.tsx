@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Clock, User } from 'lucide-react';
 import { format } from 'date-fns';
@@ -103,11 +103,23 @@ const formatArticleContent = (content: string) => {
 
 export default function ArticleDetail() {
   const { articleId } = useParams<{ articleId: string }>();
-  const [article, setArticle] = useState<NewsArticle | null>(null);
-  const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const stateArticle = (location.state as { article?: NewsArticle })?.article;
+  
+  const [article, setArticle] = useState<NewsArticle | null>(stateArticle || null);
+  const [loading, setLoading] = useState(!stateArticle);
   const [error, setError] = useState<string | null>(null);
+  const [fullContentLoading, setFullContentLoading] = useState(false);
 
   useEffect(() => {
+    // If we have article from state, use it directly
+    if (stateArticle) {
+      setArticle(stateArticle);
+      setLoading(false);
+      return;
+    }
+    
+    // Otherwise fetch from API
     const loadArticle = async () => {
       if (!articleId) return;
       try {
@@ -123,7 +135,32 @@ export default function ArticleDetail() {
       }
     };
     loadArticle();
-  }, [articleId]);
+  }, [articleId, stateArticle]);
+
+  // Fetch full content if current content is short
+  useEffect(() => {
+    const fetchFullContent = async () => {
+      if (!articleId || !article) return;
+      if (article.content && article.content.length > 500) return; // Already have enough content
+      
+      setFullContentLoading(true);
+      try {
+        const res = await fetch(`/api/news/${articleId}/full-content`);
+        const data = await res.json();
+        if (data.success && data.data?.content && data.data.content.length > (article.content?.length || 0)) {
+          setArticle(prev => prev ? { ...prev, content: data.data.content } : prev);
+        }
+      } catch (err) {
+        console.log('Could not fetch full content');
+      } finally {
+        setFullContentLoading(false);
+      }
+    };
+    
+    // Delay slightly to not block initial render
+    const timer = setTimeout(fetchFullContent, 500);
+    return () => clearTimeout(timer);
+  }, [articleId, article?.article_id]);
 
   // Use custom hooks for article features
   const { summary, sentiment, loading: summaryLoading } = useArticleSummary(articleId);
@@ -267,13 +304,30 @@ export default function ArticleDetail() {
           )}
 
           {/* Full Content - Formatted */}
-          {article.content ? (
+          {article.content && article.content.length > 100 ? (
             <div className="prose prose-invert prose-lg max-w-none mb-8">
               {formatArticleContent(article.content)}
             </div>
+          ) : fullContentLoading ? (
+            <div className="text-center py-8">
+              <div className="w-8 h-8 border-2 border-saffron-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+              <p className="text-gray-400">Loading full article...</p>
+            </div>
           ) : (
-            <div className="text-center py-8 text-gray-500">
-              <p>Loading full article content...</p>
+            <div className="prose prose-invert prose-lg max-w-none mb-8">
+              {article.description && (
+                <p className="text-gray-300 leading-relaxed">{article.description}</p>
+              )}
+              {article.link && (
+                <a 
+                  href={article.link} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 mt-6 px-4 py-2 bg-saffron-500/20 text-saffron-400 rounded-lg hover:bg-saffron-500/30 transition-colors"
+                >
+                  Read full article on {article.source_name || 'source'} →
+                </a>
+              )}
             </div>
           )}
 

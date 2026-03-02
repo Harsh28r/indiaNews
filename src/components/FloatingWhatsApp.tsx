@@ -7,7 +7,7 @@ export default function FloatingWhatsApp() {
   const [isOpen, setIsOpen] = useState(false);
 
   const shareToWhatsApp = () => {
-    const text = `📈 Check out BharatMarket - Your #1 source for Indian Stock Market News!\n\n🔥 Live market updates\n📊 FII/DII data\n🎯 Stock recommendations\n\n${window.location.origin}`;
+    const text = `📰 Check out CoinsClarity Daily - Your Daily Dose of News!\n\n📈 Markets & Stocks\n💰 Crypto Updates\n💼 Business News\n💻 Tech & Gadgets\n🎬 Entertainment\n🏏 Sports\n\n👉 https://daily.coinsclarity.com`;
     const encodedText = encodeURIComponent(text);
     window.open(`https://wa.me/?text=${encodedText}`, '_blank');
   };
@@ -30,8 +30,8 @@ export default function FloatingWhatsApp() {
                     <MessageCircle className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-white font-bold">BharatMarket</p>
-                    <p className="text-white/70 text-xs">Share with friends</p>
+                    <p className="text-white font-bold">CC Daily</p>
+                    <p className="text-white/70 text-xs">Share the news</p>
                   </div>
                 </div>
                 <button 
@@ -46,7 +46,7 @@ export default function FloatingWhatsApp() {
             {/* Content */}
             <div className="p-4">
               <p className="text-gray-300 text-sm mb-4">
-                Share BharatMarket with your friends and help them stay updated with the latest market news! 🚀
+                Share CoinsClarity Daily with your friends! Get all the news in one place - Markets, Crypto, Business, Tech, Entertainment & Sports 🚀
               </p>
               
               <div className="space-y-2 mb-4">

@@ -1,8 +1,8 @@
 import axios from 'axios';
 import type { NewsArticle, ApiResponse } from '../types';
 
-// Your c-back backend URL
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+// Use /api (Vite proxy → :5000) so browser hits same origin → no CORS. Set VITE_API_URL for prod.
+const API_BASE = (import.meta.env.VITE_API_URL as string) || '/api';
 
 const api = axios.create({
   baseURL: API_BASE,
@@ -61,22 +61,26 @@ export const fetchNews = async (page = 1, limit = 20): Promise<ApiResponse<NewsA
   return fetchByCategory('all', page, limit);
 };
 
-// Fetch by category
+const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
+
+// Fetch by category (throttled to avoid backend 429)
 export const fetchByCategory = async (category: string, page = 1, limit = 12) => {
   const endpoints = RSS_BY_CATEGORY[category.toLowerCase()] || RSS_BY_CATEGORY.all;
-  
-  const results = await Promise.allSettled(
-    endpoints.slice(0, 6).map(endpoint => 
-      api.get(`${endpoint}?page=${page}&limit=${Math.ceil(limit / Math.min(endpoints.length, 6))}`)
-    )
-  );
+  const slice = endpoints.slice(0, 6);
+  const perFeed = Math.ceil(limit / Math.min(endpoints.length, 6));
+  const results: PromiseSettledResult<{ data: { data?: NewsArticle[] } }>[] = [];
+  for (const endpoint of slice) {
+    const p = api.get(`${endpoint}?page=${page}&limit=${perFeed}`).catch(() => ({ data: {} }));
+    results.push(await p.then(r => ({ status: 'fulfilled' as const, value: r })).catch(e => ({ status: 'rejected' as const, reason: e })));
+    await delay(150);
+  }
 
   const articles: NewsArticle[] = [];
-  results.forEach(result => {
+  for (const result of results) {
     if (result.status === 'fulfilled' && result.value.data?.data) {
       articles.push(...result.value.data.data);
     }
-  });
+  }
 
   // Sort by date, newest first
   articles.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());

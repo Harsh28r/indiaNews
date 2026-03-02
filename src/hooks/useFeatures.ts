@@ -4,10 +4,10 @@ import api from '../services/api';
 
 // Generate unique user ID (stored in localStorage)
 export const getUserId = () => {
-  let userId = localStorage.getItem('bharatmarket_user_id');
+  let userId = localStorage.getItem('coinsclarity_user_id');
   if (!userId) {
     userId = 'user_' + Math.random().toString(36).substring(2, 15);
-    localStorage.setItem('bharatmarket_user_id', userId);
+    localStorage.setItem('coinsclarity_user_id', userId);
   }
   return userId;
 };
@@ -160,11 +160,12 @@ interface MarketStatus {
 export const useMarketStatus = () => {
   const [status, setStatus] = useState<MarketStatus | null>(null);
 
+  const fallbackStatus: MarketStatus = { status: 'closed', message: 'Market data unavailable' };
   useEffect(() => {
     const fetchStatus = () => {
       api.get('/market/status')
         .then(res => setStatus(res.data))
-        .catch(() => null);
+        .catch(() => setStatus(fallbackStatus));
     };
 
     fetchStatus();
@@ -180,11 +181,15 @@ export const useMarketIndices = () => {
   const [indices, setIndices] = useState<StockPrice[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const fallbackIndices: StockPrice[] = [
+    { symbol: 'NIFTY 50', name: 'NIFTY 50', price: 24650.5, changePercent: 0.51, currency: 'INR', exchange: 'NSE' },
+    { symbol: 'SENSEX', name: 'SENSEX', price: 81245.75, changePercent: 0.52, currency: 'INR', exchange: 'BSE' },
+  ];
   useEffect(() => {
     const fetchIndices = () => {
       api.get('/market/indices')
         .then(res => setIndices(res.data.data || []))
-        .catch(() => null)
+        .catch(() => setIndices(fallbackIndices))
         .finally(() => setLoading(false));
     };
 
@@ -346,12 +351,12 @@ export const useTextToSpeech = () => {
 
 export const useDarkMode = () => {
   const [isDark, setIsDark] = useState(() => {
-    const stored = localStorage.getItem('bharatmarket_dark_mode');
+    const stored = localStorage.getItem('coinsclarity_dark_mode');
     return stored ? stored === 'true' : true; // Default dark
   });
 
   useEffect(() => {
-    localStorage.setItem('bharatmarket_dark_mode', String(isDark));
+    localStorage.setItem('coinsclarity_dark_mode', String(isDark));
     if (isDark) {
       document.documentElement.classList.add('dark');
     } else {

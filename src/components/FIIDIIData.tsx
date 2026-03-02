@@ -32,11 +32,12 @@ export default function FIIDIIData() {
       setLoading(true);
       const res = await api.get<FIIDIIResponse>('/market/fii-dii');
       if (res.data.success) {
-        setData(res.data.data.daily);
-        setSummary(res.data.data.summary);
+        setData(res.data.data.daily ?? []);
+        setSummary(res.data.data.summary ?? null);
       }
-    } catch (error) {
-      console.error('Failed to fetch FII/DII data:', error);
+    } catch {
+      setData([]);
+      setSummary(null);
     } finally {
       setLoading(false);
     }
