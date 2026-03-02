@@ -38,8 +38,8 @@ export default function VideoSection() {
         setVideos(res.data.data || []);
         setChannels(res.data.channels || []);
       }
-    } catch (error) {
-      console.error('Failed to fetch videos:', error);
+    } catch {
+      setVideos([]);
       // Fallback to some default channels
       setChannels([
         { name: 'CNBC-TV18', url: 'https://www.youtube.com/@ABORAD' },
