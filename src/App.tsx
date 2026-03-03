@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import { TranslationProvider } from './context/TranslationContext';
 import Header from './components/Header';
 import StockTicker from './components/StockTicker';
@@ -44,6 +45,9 @@ function App() {
         
         {/* Floating WhatsApp Button */}
         <FloatingWhatsApp />
+        
+        {/* Vercel Web Analytics */}
+        <Analytics />
         
         {/* Footer */}
         <footer className="border-t border-surface-700 mt-16">
