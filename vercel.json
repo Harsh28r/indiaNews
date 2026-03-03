@@ -1,5 +1,8 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://camify.fun.coinsclarity.com/api/:path*" }
+    {
+      "source": "/api/(.*)",
+      "destination": "https://camify.fun.coinsclarity.com/$1"
+    }
   ]
 }

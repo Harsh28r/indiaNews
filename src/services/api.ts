@@ -1,8 +1,8 @@
 import axios from 'axios';
 import type { NewsArticle, ApiResponse } from '../types';
 
-// Use /api (Vite proxy → :5000) so browser hits same origin → no CORS. Set VITE_API_URL for prod.
-const API_BASE = (import.meta.env.VITE_API_URL as string) || '/api';
+// Always use same-origin API path. On Vercel, vercel.json rewrites /api/* to backend.
+const API_BASE = '/api';
 
 const api = axios.create({
   baseURL: API_BASE,
