@@ -18,7 +18,6 @@ import Earnings from './pages/Earnings';
 import IPOTracker from './pages/IPOTracker';
 import Portfolio from './pages/Portfolio';
 import Alerts from './pages/Alerts';
-import { Analytics } from '@vercel/analytics/react';
 
 function App() {
   return (
@@ -71,7 +70,6 @@ function App() {
             </div>
           </div>
         </footer>
-        <Analytics />
       </div>
     </BrowserRouter>
     </TranslationProvider>
