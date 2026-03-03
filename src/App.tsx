@@ -5,6 +5,7 @@ import Header from './components/Header';
 import StockTicker from './components/StockTicker';
 import BreakingNewsBanner from './components/BreakingNewsBanner';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
+import FloatingAIChat from './components/FloatingAIChat';
 import Home from './pages/Home';
 import ArticleDetail from './pages/ArticleDetail';
 import Search from './pages/Search';
@@ -17,6 +18,7 @@ import Earnings from './pages/Earnings';
 import IPOTracker from './pages/IPOTracker';
 import Portfolio from './pages/Portfolio';
 import Alerts from './pages/Alerts';
+import { Analytics } from '@vercel/analytics/react';
 
 function App() {
   return (
@@ -45,6 +47,7 @@ function App() {
         
         {/* Floating WhatsApp Button */}
         <FloatingWhatsApp />
+        <FloatingAIChat />
         
         {/* Vercel Web Analytics */}
         <Analytics />
@@ -68,6 +71,7 @@ function App() {
             </div>
           </div>
         </footer>
+        <Analytics />
       </div>
     </BrowserRouter>
     </TranslationProvider>
