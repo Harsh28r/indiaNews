@@ -379,7 +379,8 @@ export const useRelatedArticles = (articleId: string | undefined) => {
     if (!articleId) return;
     
     setLoading(true);
-    api.get(`/news/${articleId}/related`)
+    // Request 12 related articles for better coverage
+    api.get(`/news/${articleId}/related?limit=12`)
       .then(res => setArticles(res.data.data || []))
       .catch(() => setArticles([]))
       .finally(() => setLoading(false));

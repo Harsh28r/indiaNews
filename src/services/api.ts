@@ -12,42 +12,43 @@ const api = axios.create({
   }
 });
 
-// All RSS endpoints by category
+// Premium Indian news sources (no TOI) - better brands with more RSS feeds
 const RSS_BY_CATEGORY: Record<string, string[]> = {
   all: [
-    '/fetch-toi-top-rss', '/fetch-ht-top-rss', '/fetch-ndtv-top-rss', '/fetch-ie-top-rss',
-    '/fetch-et-markets-rss', '/fetch-toi-entertainment-rss', '/fetch-toi-india-rss', '/fetch-toi-world-rss'
+    '/fetch-ht-top-rss', '/fetch-ndtv-top-rss', '/fetch-ie-top-rss',
+    '/fetch-et-markets-rss', '/fetch-thehindu-india-rss', '/fetch-livemint-markets-rss',
+    '/fetch-bs-markets-rss', '/fetch-bs-economy-rss'
   ],
   markets: [
     '/fetch-et-markets-rss', '/fetch-et-stocks-rss', '/fetch-livemint-markets-rss',
-    '/fetch-bs-markets-rss', '/fetch-bs-companies-rss'
+    '/fetch-bs-markets-rss', '/fetch-bs-companies-rss', '/fetch-et-commodities-rss'
   ],
-  stocks: ['/fetch-et-stocks-rss', '/fetch-et-ipo-rss', '/fetch-bs-companies-rss'],
+  stocks: ['/fetch-et-stocks-rss', '/fetch-et-ipo-rss', '/fetch-bs-companies-rss', '/fetch-bs-markets-rss'],
   business: [
     '/fetch-bs-economy-rss', '/fetch-et-commodities-rss', '/fetch-et-forex-rss',
-    '/fetch-livemint-money-rss', '/fetch-et-mutualfunds-rss'
+    '/fetch-livemint-money-rss', '/fetch-et-mutualfunds-rss', '/fetch-bs-markets-rss'
   ],
   entertainment: [
-    '/fetch-toi-entertainment-rss', '/fetch-toi-celebs-rss', '/fetch-ht-entertainment-rss',
-    '/fetch-ndtv-entertainment-rss', '/fetch-et-entertainment-rss'
+    '/fetch-ht-entertainment-rss', '/fetch-ndtv-entertainment-rss', 
+    '/fetch-et-entertainment-rss', '/fetch-filmfare-rss'
   ],
-  bollywood: ['/fetch-toi-entertainment-rss', '/fetch-toi-celebs-rss', '/fetch-filmfare-rss'],
+  bollywood: ['/fetch-ht-entertainment-rss', '/fetch-filmfare-rss', '/fetch-ndtv-entertainment-rss', '/fetch-et-entertainment-rss'],
   politics: [
-    '/fetch-ndtv-india-rss', '/fetch-ie-politics-rss', '/fetch-toi-india-rss',
+    '/fetch-ndtv-india-rss', '/fetch-ie-politics-rss',
     '/fetch-ht-india-rss', '/fetch-thehindu-india-rss'
   ],
-  india: ['/fetch-toi-india-rss', '/fetch-ht-india-rss', '/fetch-ndtv-india-rss', '/fetch-thehindu-india-rss'],
+  india: ['/fetch-ht-india-rss', '/fetch-ndtv-india-rss', '/fetch-thehindu-india-rss', '/fetch-ie-politics-rss'],
   world: [
-    '/fetch-toi-world-rss', '/fetch-ht-world-rss', '/fetch-ndtv-world-rss',
+    '/fetch-ht-world-rss', '/fetch-ndtv-world-rss',
     '/fetch-ie-world-rss', '/fetch-thehindu-world-rss'
   ],
-  sports: ['/fetch-toi-sports-rss', '/fetch-ht-cricket-rss', '/fetch-espn-india-rss'],
-  tech: ['/fetch-et-tech-rss', '/fetch-toi-tech-rss', '/fetch-gadgets360-rss'],
-  lifestyle: ['/fetch-toi-life-rss', '/fetch-ht-lifestyle-rss'],
-  trending: ['/fetch-toi-top-rss', '/fetch-ht-top-rss', '/fetch-ndtv-top-rss', '/fetch-ie-top-rss']
+  sports: ['/fetch-ht-cricket-rss', '/fetch-espn-india-rss', '/fetch-ndtv-india-rss'],
+  tech: ['/fetch-et-tech-rss', '/fetch-gadgets360-rss', '/fetch-ndtv-india-rss'],
+  lifestyle: ['/fetch-ht-lifestyle-rss', '/fetch-ndtv-india-rss'],
+  trending: ['/fetch-ht-top-rss', '/fetch-ndtv-top-rss', '/fetch-ie-top-rss', '/fetch-thehindu-india-rss', '/fetch-livemint-markets-rss']
 };
 
-// Fetch news from all sources (default feed)
+// Fetch news from all sources (default feed) - optimized
 export const fetchNews = async (page = 1, limit = 20): Promise<ApiResponse<NewsArticle[]>> => {
   try {
     // Try News collection first (persisted articles)
@@ -61,19 +62,20 @@ export const fetchNews = async (page = 1, limit = 20): Promise<ApiResponse<NewsA
   return fetchByCategory('all', page, limit);
 };
 
-const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
-
-// Fetch by category (throttled to avoid backend 429)
+// Fetch by category (optimized - parallel requests, faster)
 export const fetchByCategory = async (category: string, page = 1, limit = 12) => {
   const endpoints = RSS_BY_CATEGORY[category.toLowerCase()] || RSS_BY_CATEGORY.all;
   const slice = endpoints.slice(0, 6);
   const perFeed = Math.ceil(limit / Math.min(endpoints.length, 6));
-  const results: PromiseSettledResult<{ data: { data?: NewsArticle[] } }>[] = [];
-  for (const endpoint of slice) {
-    const p = api.get(`${endpoint}?page=${page}&limit=${perFeed}`).catch(() => ({ data: {} }));
-    results.push(await p.then(r => ({ status: 'fulfilled' as const, value: r })).catch(e => ({ status: 'rejected' as const, reason: e })));
-    await delay(150);
-  }
+  
+  // Fetch all in parallel (backend handles rate limiting, no frontend delays needed)
+  const promises = slice.map(endpoint => 
+    api.get(`${endpoint}?page=${page}&limit=${perFeed}`)
+      .then(r => ({ status: 'fulfilled' as const, value: r }))
+      .catch(e => ({ status: 'rejected' as const, reason: e }))
+  );
+  
+  const results = await Promise.all(promises);
 
   const articles: NewsArticle[] = [];
   for (const result of results) {
@@ -85,10 +87,10 @@ export const fetchByCategory = async (category: string, page = 1, limit = 12) =>
   // Sort by date, newest first
   articles.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
   
-  // Remove duplicates by title similarity
+  // Remove duplicates by link (more reliable than title)
   const seen = new Set<string>();
   const unique = articles.filter(a => {
-    const key = a.title.toLowerCase().slice(0, 50);
+    const key = a.link || a.article_id || a.title.toLowerCase().slice(0, 50);
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
@@ -127,4 +129,3 @@ export const fetchIndianIndices = async () => {
 };
 
 export default api;
-

@@ -7,6 +7,7 @@ import XTrending from '../components/XTrending';
 import MarketMovers from '../components/MarketMovers';
 import FIIDIIData from '../components/FIIDIIData';
 import VideoSection from '../components/VideoSection';
+import TrendingTopics from '../components/TrendingTopics';
 import { fetchNews, fetchTrendingNews, fetchByCategory } from '../services/api';
 import type { NewsArticle } from '../types';
 
@@ -170,7 +171,7 @@ export default function Home() {
       </section>
 
       {/* Video News Section */}
-      <VideoSection />
+      {/* <VideoSection /> */}
 
       {/* Main News Grid */}
       <section className="py-12 px-4">
@@ -280,6 +281,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Video Section - At the end */}
+      <VideoSection />
     </div>
   );
 }

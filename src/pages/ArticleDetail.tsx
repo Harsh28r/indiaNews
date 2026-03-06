@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Clock, User } from 'lucide-react';
-import { format } from 'date-fns';
-import { fetchArticle } from '../services/api';
+import { format, formatDistanceToNow } from 'date-fns';
+import { fetchArticle, fetchNews } from '../services/api';
 import type { NewsArticle } from '../types';
 import { useArticleSummary, useArticleStocks } from '../hooks/useFeatures';
 import TLDRBox from '../components/TLDRBox';
@@ -12,6 +12,9 @@ import ArticleActions from '../components/ArticleActions';
 import RelatedArticles from '../components/RelatedArticles';
 import ReadingTime, { getReadingTime } from '../components/ReadingTime';
 import NewsletterBox from '../components/NewsletterBox';
+import NewsCard from '../components/NewsCard';
+import ReadingProgress from '../components/ReadingProgress';
+import { Helmet } from 'react-helmet-async';
 
 // Format article content with proper structure
 const formatArticleContent = (content: string) => {
@@ -110,6 +113,10 @@ export default function ArticleDetail() {
   const [loading, setLoading] = useState(!stateArticle);
   const [error, setError] = useState<string | null>(null);
   const [fullContentLoading, setFullContentLoading] = useState(false);
+  const [latestNews, setLatestNews] = useState<NewsArticle[]>([]);
+  const [newsLoading, setNewsLoading] = useState(false);
+  const [moreNews, setMoreNews] = useState<NewsArticle[]>([]);
+  const [moreNewsLoading, setMoreNewsLoading] = useState(false);
 
   useEffect(() => {
     // If we have article from state, use it directly
@@ -136,6 +143,64 @@ export default function ArticleDetail() {
     };
     loadArticle();
   }, [articleId, stateArticle]);
+
+  // Fetch latest news list for sidebar
+  useEffect(() => {
+    const loadLatestNews = async () => {
+      setNewsLoading(true);
+      try {
+        const res = await fetchNews(1, 8);
+        if (res.data) {
+          // Filter out current article
+          const filtered = res.data.filter(item => item.article_id !== articleId);
+          setLatestNews(filtered.slice(0, 6));
+        }
+      } catch (err) {
+        console.error('Failed to load latest news:', err);
+      } finally {
+        setNewsLoading(false);
+      }
+    };
+    loadLatestNews();
+  }, [articleId]);
+
+  // Fetch more news cards (6 with images) - different from sidebar
+  useEffect(() => {
+    const loadMoreNews = async () => {
+      setMoreNewsLoading(true);
+      try {
+        // Fetch more items to have enough to filter
+        const res = await fetchNews(1, 25);
+        if (res.data) {
+          // Get sidebar article IDs to exclude
+          const sidebarIds = new Set(
+            latestNews.map(item => item.article_id || item.link || item.title)
+          );
+          
+          // Filter: exclude current article, exclude sidebar articles, must have image
+          const filtered = res.data
+            .filter(item => {
+              const itemId = item.article_id || item.link || item.title;
+              return itemId !== articleId && 
+                     !sidebarIds.has(itemId) && 
+                     item.image_url &&
+                     item.image_url.startsWith('http');
+            })
+            .slice(0, 6);
+          
+          setMoreNews(filtered);
+        }
+      } catch (err) {
+        console.error('Failed to load more news:', err);
+      } finally {
+        setMoreNewsLoading(false);
+      }
+    };
+    // Wait for sidebar to load first, then load different news
+    if (latestNews.length > 0 || !newsLoading) {
+      loadMoreNews();
+    }
+  }, [articleId, latestNews.length, newsLoading]);
 
   // Fetch full content if current content is short
   useEffect(() => {
@@ -199,8 +264,42 @@ export default function ArticleDetail() {
     article.source_name || 'News'
   )}`;
 
+  const articleUrl = `${window.location.origin}/article/${articleId}`;
+  const articleImage = article.image_url || `${window.location.origin}/og-image.png`;
+  const articleDescription = article.description || article.content?.slice(0, 160) || 'Read the full article on CoinsClarity';
+
   return (
-    <motion.article
+    <>
+      <Helmet>
+        <title>{article.title} | CoinsClarity</title>
+        <meta name="description" content={articleDescription} />
+        <link rel="canonical" href={articleUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content={article.title} />
+        <meta property="og:description" content={articleDescription} />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={articleUrl} />
+        <meta property="og:image" content={articleImage} />
+        <meta property="og:site_name" content="CoinsClarity" />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={article.title} />
+        <meta name="twitter:description" content={articleDescription} />
+        <meta name="twitter:image" content={articleImage} />
+        <meta name="twitter:site" content="@coinsclarity" />
+        
+        {/* Article Meta */}
+        {article.pubDate && (
+          <meta property="article:published_time" content={new Date(article.pubDate).toISOString()} />
+        )}
+        {article.category && article.category.map((cat, i) => (
+          <meta key={i} property="article:tag" content={cat} />
+        ))}
+      </Helmet>
+      <ReadingProgress />
+      <motion.article
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="min-h-screen"
@@ -239,8 +338,11 @@ export default function ArticleDetail() {
       </div>
 
       {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 -mt-32 relative z-10 pb-16">
-        <div className="bg-surface-800 rounded-2xl p-8 border border-surface-700/50 shadow-2xl">
+      <div className="max-w-7xl mx-auto px-4 -mt-32 relative z-10 pb-16">
+        <div className="flex gap-8">
+          {/* Main Article Content */}
+          <div className="flex-1 min-w-0">
+            <div className="bg-surface-800 rounded-2xl p-8 border border-surface-700/50 shadow-2xl">
           {/* Category Badge */}
           <span className="inline-block px-3 py-1 mb-4 text-xs font-semibold bg-saffron-500/20 text-saffron-400 rounded-full border border-saffron-500/30">
             {article.category?.[0] || 'Finance'}
@@ -361,6 +463,26 @@ export default function ArticleDetail() {
             />
           </div>
 
+          {/* More News Cards Section */}
+          <div className="mt-12 pt-8 border-t border-surface-700">
+            <h3 className="text-2xl font-bold text-white mb-6">More News</h3>
+            {moreNewsLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array(6).fill(0).map((_, i) => (
+                  <div key={i} className="animate-pulse bg-surface-700/50 rounded-2xl h-64"></div>
+                ))}
+              </div>
+            ) : moreNews.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {moreNews.map((newsItem) => (
+                  <NewsCard key={newsItem.article_id || newsItem.link} article={newsItem} variant="default" />
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500 text-center py-8">No more news available</p>
+            )}
+          </div>
+
           {/* Related Articles */}
           <RelatedArticles articleId={article.article_id} />
 
@@ -368,9 +490,68 @@ export default function ArticleDetail() {
           <div className="mt-12 pt-8 border-t border-surface-700">
             <NewsletterBox />
           </div>
+            </div>
+          </div>
+
+          {/* Sidebar - Latest News List */}
+          <div className="w-80 flex-shrink-0 hidden lg:block">
+            <div className="bg-surface-800 rounded-2xl p-6 border border-surface-700/50 shadow-2xl sticky top-4">
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <Clock size={18} className="text-saffron-400" />
+                Latest News
+              </h3>
+              
+              {newsLoading ? (
+                <div className="space-y-3">
+                  {Array(6).fill(0).map((_, i) => (
+                    <div key={i} className="animate-pulse bg-surface-700/50 rounded-lg h-20"></div>
+                  ))}
+                </div>
+              ) : latestNews.length > 0 ? (
+                <div className="space-y-3">
+                  {latestNews.map((newsItem, index) => {
+                    const getNewsId = () => {
+                      if (newsItem.article_id) return newsItem.article_id;
+                      if (newsItem.link) {
+                        const urlParts = newsItem.link.split('/');
+                        const lastPart = urlParts[urlParts.length - 1];
+                        if (lastPart && lastPart.length > 0) {
+                          return encodeURIComponent(lastPart.split('?')[0]);
+                        }
+                        return btoa(newsItem.link).replace(/[+/=]/g, '').slice(0, 50);
+                      }
+                      if (newsItem.title) {
+                        return encodeURIComponent(newsItem.title.slice(0, 50).replace(/[^a-zA-Z0-9]/g, '-'));
+                      }
+                      return 'news-' + Date.now() + '-' + index;
+                    };
+                    
+                    return (
+                      <Link
+                        key={newsItem.article_id || index}
+                        to={`/article/${getNewsId()}`}
+                        state={{ article: newsItem }}
+                        className="block p-3 rounded-lg bg-surface-700/30 hover:bg-surface-700/50 transition-colors group"
+                      >
+                        <h4 className="text-sm font-medium text-white line-clamp-2 group-hover:text-saffron-400 transition-colors mb-1">
+                          {newsItem.title}
+                        </h4>
+                        <p className="text-xs text-gray-500">
+                          {newsItem.pubDate && formatDistanceToNow(new Date(newsItem.pubDate), { addSuffix: true })}
+                        </p>
+                      </Link>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-sm">No news available</p>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </motion.article>
+    </>
   );
 }
 

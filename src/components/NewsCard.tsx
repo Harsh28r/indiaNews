@@ -71,10 +71,31 @@ export default function NewsCard({ article, variant = 'default' }: Props) {
     ? article.image_url 
     : fallbackImage;
 
+  // Generate article ID - use article_id, link hash, or encoded title as fallback
+  const getArticleId = (): string => {
+    if (article.article_id) return article.article_id;
+    if (article.link) {
+      // Extract ID from URL or use URL hash
+      const urlParts = article.link.split('/');
+      const lastPart = urlParts[urlParts.length - 1];
+      if (lastPart && lastPart.length > 0) {
+        return encodeURIComponent(lastPart.split('?')[0]);
+      }
+      // Use hash of full URL as fallback
+      return btoa(article.link).replace(/[+/=]/g, '').slice(0, 50);
+    }
+    if (article.title) {
+      return encodeURIComponent(article.title.slice(0, 50).replace(/[^a-zA-Z0-9]/g, '-'));
+    }
+    return 'article-' + Date.now();
+  };
+  
+  const articleId = getArticleId();
+
   if (variant === 'featured') {
     return (
       <Link
-        to={`/article/${article.article_id}`}
+        to={`/article/${articleId}`}
         state={{ article }}
         className="group relative block rounded-2xl overflow-hidden card-hover"
       >
@@ -111,7 +132,7 @@ export default function NewsCard({ article, variant = 'default' }: Props) {
   if (variant === 'compact') {
     return (
       <Link
-        to={`/article/${article.article_id}`}
+        to={`/article/${articleId}`}
         state={{ article }}
         className="group flex gap-4 p-3 rounded-xl hover:bg-surface-700/30 transition-all"
       >
@@ -141,7 +162,7 @@ export default function NewsCard({ article, variant = 'default' }: Props) {
   // Default variant
   return (
     <Link
-      to={`/article/${article.article_id}`}
+      to={`/article/${articleId}`}
       state={{ article }}
       className="group block bg-surface-800 rounded-2xl overflow-hidden border border-surface-700/50 card-hover"
     >
