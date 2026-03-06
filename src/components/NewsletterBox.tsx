@@ -47,6 +47,7 @@ export default function NewsletterBox() {
         <div>
           <h3 className="text-lg font-semibold text-white">Morning Digest</h3>
           <p className="text-sm text-gray-400">Top 5 news delivered at 6 AM</p>
+          <p className="text-xs text-saffron-400 mt-1">Join 12,500+ readers</p>
         </div>
       </div>
       

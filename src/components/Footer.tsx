@@ -34,16 +34,16 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-3">
               <a
-                href="https://twitter.com/coinsclarity"
+                href="https://x.com/coinsclarity?t=hSpD5E1d2xIjii-mhw9kEQ&s=09"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-lg bg-surface-700 hover:bg-blue-500/20 text-gray-400 hover:text-blue-400 transition-colors"
-                aria-label="Twitter"
+                aria-label="Twitter/X"
               >
                 <Twitter className="w-5 h-5" />
               </a>
               <a
-                href="https://facebook.com/coinsclarity"
+                href="https://www.facebook.com/profile.php?id=61587166360306"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-lg bg-surface-700 hover:bg-blue-500/20 text-gray-400 hover:text-blue-400 transition-colors"
@@ -70,7 +70,7 @@ export default function Footer() {
                 <Youtube className="w-5 h-5" />
               </a>
               <a
-                href="https://instagram.com/coinsclarity"
+                href="https://instagram.com/coinsclarity?igsh=MWc2YnRjMXIzeTE3aw%3D%3D"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-lg bg-surface-700 hover:bg-pink-500/20 text-gray-400 hover:text-pink-400 transition-colors"

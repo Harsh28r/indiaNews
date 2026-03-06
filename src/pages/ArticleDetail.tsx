@@ -15,6 +15,8 @@ import NewsletterBox from '../components/NewsletterBox';
 import NewsCard from '../components/NewsCard';
 import ReadingProgress from '../components/ReadingProgress';
 import { Helmet } from 'react-helmet-async';
+import SocialProof from '../components/SocialProof';
+import FakeAd from '../components/FakeAd';
 
 // Format article content with proper structure
 const formatArticleContent = (content: string) => {
@@ -370,6 +372,12 @@ export default function ArticleDetail() {
             <ReadingTime 
               minutes={getReadingTime(`${article.title} ${article.description || ''} ${article.content || ''}`)} 
             />
+            <SocialProof articleId={article.article_id} variant="inline" />
+          </div>
+          
+          {/* Social Proof Badge */}
+          <div className="mb-6">
+            <SocialProof articleId={article.article_id} variant="badge" />
           </div>
 
           {/* Description - shown as lead */}
@@ -378,6 +386,9 @@ export default function ArticleDetail() {
               {article.description}
             </p>
           )}
+
+          {/* Native Ad */}
+          <FakeAd variant="native" />
 
           {/* TLDR Box - AI Summary */}
           {(summary.length > 0 || summaryLoading) && (
@@ -407,9 +418,13 @@ export default function ArticleDetail() {
 
           {/* Full Content - Formatted */}
           {article.content && article.content.length > 100 ? (
-            <div className="prose prose-invert prose-lg max-w-none mb-8">
-              {formatArticleContent(article.content)}
-            </div>
+            <>
+              <div className="prose prose-invert prose-lg max-w-none mb-8">
+                {formatArticleContent(article.content)}
+              </div>
+              {/* Inline Ad in middle of content */}
+              <FakeAd variant="inline" />
+            </>
           ) : fullContentLoading ? (
             <div className="text-center py-8">
               <div className="w-8 h-8 border-2 border-saffron-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />

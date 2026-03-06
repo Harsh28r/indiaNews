@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { RefreshCw, AlertCircle, TrendingUp, Briefcase, Globe, Film, Vote, Plane, Trophy, Smartphone, Sparkles, Flame } from 'lucide-react';
 import NewsCard from '../components/NewsCard';
@@ -8,6 +8,9 @@ import MarketMovers from '../components/MarketMovers';
 import FIIDIIData from '../components/FIIDIIData';
 import VideoSection from '../components/VideoSection';
 import TrendingTopics from '../components/TrendingTopics';
+import LiveActivity from '../components/LiveActivity';
+import SocialProof from '../components/SocialProof';
+import FakeAd from '../components/FakeAd';
 import { fetchNews, fetchTrendingNews, fetchByCategory } from '../services/api';
 import type { NewsArticle } from '../types';
 
@@ -215,19 +218,30 @@ export default function Home() {
             </div>
           )}
 
+          {/* Social Proof Banner */}
+          <div className="mb-6">
+            <SocialProof variant="banner" />
+          </div>
+
           <div className="flex gap-6">
             {/* Main News Grid */}
             <div className="flex-1">
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {news.map((article, i) => (
-                  <motion.div
-                    key={article.article_id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                  >
-                    <NewsCard article={article} />
-                  </motion.div>
+                  <React.Fragment key={article.article_id}>
+                    {i === 6 && (
+                      <div className="sm:col-span-2 lg:col-span-3">
+                        <FakeAd variant="banner" />
+                      </div>
+                    )}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                    >
+                      <NewsCard article={article} />
+                    </motion.div>
+                  </React.Fragment>
                 ))}
               </div>
 
@@ -275,6 +289,10 @@ export default function Home() {
               <div className="sticky top-24 space-y-6">
                 <MarketMovers />
                 <FIIDIIData />
+                <TrendingTopics />
+                <FakeAd variant="sidebar" category="finance" />
+                <LiveActivity />
+                <FakeAd variant="sidebar" category="tech" />
                 <XTrending />
               </div>
             </aside>
