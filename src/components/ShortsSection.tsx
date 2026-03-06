@@ -25,7 +25,7 @@ export default function ShortsSection() {
     const loadShorts = async () => {
       try {
         setLoading(true);
-        const res = await fetchTrendingNews(1, 12);
+        const res = await fetchTrendingNews();
         if (res.data) {
           // Convert news articles to short items
           const shortItems: ShortItem[] = res.data

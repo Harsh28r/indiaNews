@@ -1,7 +1,7 @@
 // Fake Advertisement Components
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X, ExternalLink, TrendingUp, Briefcase, Smartphone, Car, CreditCard } from 'lucide-react';
+import { X, ExternalLink, TrendingUp, Smartphone, Car, CreditCard } from 'lucide-react';
 
 interface Ad {
   id: string;

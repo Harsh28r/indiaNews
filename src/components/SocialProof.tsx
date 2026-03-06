@@ -1,6 +1,6 @@
 // Social Proof Component - Shows active users, engagement
 import { useState, useEffect } from 'react';
-import { Users, Eye, TrendingUp, Clock } from 'lucide-react';
+import { Users, Eye, TrendingUp } from 'lucide-react';
 
 interface SocialProofProps {
   articleId?: string;

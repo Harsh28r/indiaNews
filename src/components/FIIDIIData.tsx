@@ -10,17 +10,6 @@ interface DayData {
   dii: { buy: number; sell: number; net: number };
 }
 
-interface FIIDIIResponse {
-  success: boolean;
-  data: {
-    daily: DayData[];
-    summary: {
-      fiiNetTotal: number;
-      diiNetTotal: number;
-      trend: string;
-    };
-  };
-}
 
 export default function FIIDIIData() {
   const [data, setData] = useState<DayData[]>([]);

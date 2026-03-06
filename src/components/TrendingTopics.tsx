@@ -12,7 +12,7 @@ export default function TrendingTopics() {
   useEffect(() => {
     const loadTrending = async () => {
       try {
-        const res = await fetchTrendingNews(1, 20);
+        const res = await fetchTrendingNews();
         if (res.data) {
           // Extract keywords/topics from trending articles
           const allKeywords = res.data
