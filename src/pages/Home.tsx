@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { RefreshCw, AlertCircle, TrendingUp, Briefcase, Globe, Film, Vote, Plane, Trophy, Smartphone, Sparkles, Flame } from 'lucide-react';
 import NewsCard from '../components/NewsCard';
@@ -27,7 +29,51 @@ const CATEGORIES = [
   { id: 'tech', name: 'Tech', icon: Smartphone },
 ];
 
+const CAT_SEO: Record<string, { title: string; desc: string; h1: string; dek: string }> = {
+  all: {
+    title: 'CoinsClarity Daily — Indian Markets, Stocks & News',
+    desc: 'Indian market news, NSE/BSE stocks, business, tech and sports. Live headlines from CoinsClarity Daily.',
+    h1: 'Indian Market Intelligence',
+    dek: 'Real-time news, analysis, and insights from NSE, BSE, and beyond',
+  },
+  markets: {
+    title: 'Indian Markets News Today — NSE, BSE & Stocks | CoinsClarity Daily',
+    desc: 'Live Indian markets news: NSE, BSE, Sensex, Nifty, stocks and FII/DII flows. Updated through the day.',
+    h1: 'Indian Markets News Today',
+    dek: 'NSE, BSE, Sensex, Nifty and stock-market headlines — not a homepage dump',
+  },
+  trending: {
+    title: 'Trending India News | CoinsClarity Daily',
+    desc: 'Stories moving Indian markets, politics and tech right now.',
+    h1: 'Trending in India',
+    dek: 'What is moving the tape and the timeline today',
+  },
+  business: {
+    title: 'India Business News | CoinsClarity Daily',
+    desc: 'Indian business and company news — earnings, deals, policy.',
+    h1: 'India Business News',
+    dek: 'Companies, earnings and policy that move stocks',
+  },
+  sports: {
+    title: 'Sports News India | CoinsClarity Daily',
+    desc: 'Indian sports news — cricket and more.',
+    h1: 'Sports News',
+    dek: 'Cricket and sports headlines',
+  },
+  tech: {
+    title: 'India Tech News | CoinsClarity Daily',
+    desc: 'Indian tech and gadget news.',
+    h1: 'India Tech News',
+    dek: 'Startups, gadgets and tech policy',
+  },
+};
+
+const VALID_CAT = new Set(CATEGORIES.map((c) => c.id));
+
 export default function Home() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlCat = searchParams.get('category') || 'all';
+  const initialCat = VALID_CAT.has(urlCat) ? urlCat : 'all';
   const [news, setNews] = useState<NewsArticle[]>([]);
   const [trending, setTrending] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,7 +81,11 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [, setPage] = useState(1); // Using functional update pattern
   const [hasMore, setHasMore] = useState(true);
-  const [activeCategory, setActiveCategory] = useState('all');
+  const [activeCategory, setActiveCategory] = useState(initialCat);
+
+  useEffect(() => {
+    if (VALID_CAT.has(urlCat) && urlCat !== activeCategory) setActiveCategory(urlCat);
+  }, [urlCat]);
   
   // Infinite scroll ref
   const loaderRef = useRef<HTMLDivElement>(null);
@@ -112,13 +162,34 @@ export default function Home() {
 
   const handleCategoryChange = (category: string) => {
     setActiveCategory(category);
+    if (category === 'all') setSearchParams({});
+    else setSearchParams({ category });
   };
+
+  const seo = CAT_SEO[activeCategory] || CAT_SEO.all;
+  const canonical =
+    activeCategory === 'all'
+      ? 'https://daily.coinsclarity.com/'
+      : `https://daily.coinsclarity.com/?category=${activeCategory}`;
+  const h1Parts = useMemo(() => {
+    const words = seo.h1.split(' ');
+    const last = words.pop() || '';
+    return { lead: words.join(' '), last };
+  }, [seo.h1]);
 
   const featured = trending[0];
   const sideNews = trending.slice(1, 4);
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>{seo.title}</title>
+        <meta name="description" content={seo.desc} />
+        <link rel="canonical" href={canonical} />
+        <meta property="og:title" content={seo.title} />
+        <meta property="og:description" content={seo.desc} />
+        <meta property="og:url" content={canonical} />
+      </Helmet>
       {/* Hero Section */}
       <section className="relative py-12 px-4 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-saffron-500/5 via-transparent to-green-india/5" />
@@ -132,11 +203,11 @@ export default function Home() {
             className="text-center mb-8"
           >
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="text-gradient-tricolor">Indian Market</span>
-              <span className="text-white"> Intelligence</span>
+              <span className="text-gradient-tricolor">{h1Parts.lead || seo.h1}</span>
+              {h1Parts.lead ? <span className="text-white"> {h1Parts.last}</span> : null}
             </h1>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Real-time news, analysis, and insights from NSE, BSE, and beyond
+              {seo.dek}
             </p>
           </motion.div>
 

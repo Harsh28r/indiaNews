@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, RefreshCw, BarChart3 } from 'lucide-react';
 import { fetchIndianIndices } from '../services/api';
@@ -29,6 +30,14 @@ export default function Markets() {
 
   return (
     <div className="min-h-screen py-12 px-4">
+      <Helmet>
+        <title>Indian Markets Live — NSE, BSE, Sensex & Nifty | CoinsClarity Daily</title>
+        <meta
+          name="description"
+          content="Live Indian market indices, sector heatmap, FII/DII and movers. NSE and BSE data on CoinsClarity Daily."
+        />
+        <link rel="canonical" href="https://daily.coinsclarity.com/markets" />
+      </Helmet>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
